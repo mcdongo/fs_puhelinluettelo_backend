@@ -1,7 +1,7 @@
-POST https://solitary-field-8355.fly.dev/api/persons
+POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Reinikainen",
+    "name": "Matti Meikäläinen",
     "number": "044-123456"
 }

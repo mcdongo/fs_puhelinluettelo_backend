@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 const app = express()
 app.use(cors())
 app.use(express.static('build'))
@@ -46,24 +48,21 @@ let persons = [
     ]
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(persons => {
+      res.json(persons)
+    })
 })
 
 app.get('/info', (req, res) => {
-  const bookLength = persons.length
+  const bookLength = Person.length
   const date = new Date()
   res.send(`Phonebook has info for ${bookLength} people<br>${date}`)
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
+  Person.findById(req.params.id).then(person => {
     res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  })
 })
 
 app.put('/api/persons/:id', (req, res) => {
@@ -99,19 +98,19 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId()
-  }
+  })
 
-  persons = persons.concat(person)
-  res.json(person)
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 const generateId = () => Math.floor(Math.random()*1000)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })

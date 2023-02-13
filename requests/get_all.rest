@@ -1,1 +1,1 @@
-GET https://solitary-field-8355.fly.dev/api/persons
+GET http://localhost:3001/api/persons
