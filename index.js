@@ -1,8 +1,12 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
+app.use(cors())
+app.use(express.static('build'))
 
 app.use(express.json())
+
 app.use(morgan(function (tokens, req, res) {
   let base = [
     tokens.method(req, res),
@@ -62,6 +66,13 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
+app.put('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const body = req.body
+  persons = persons.map(person => person.id !== id ? person : {name:body.name, number:body.number})
+  res.status(200).end()
+})
+
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
   persons = persons.filter(person => person.id !== id)
@@ -100,7 +111,7 @@ app.post('/api/persons', (req, res) => {
 
 const generateId = () => Math.floor(Math.random()*1000)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
